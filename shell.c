@@ -33,9 +33,8 @@ int main(void)
 
 		if (noOfValuesInStringRead == -1)
 		{
-			free(readString);
-			readString = NULL;
-			handleError();
+			printf("\n");
+			break;
 		}
 
 		if (readString[noOfValuesInStringRead - 1] == '\n')
@@ -64,16 +63,18 @@ int main(void)
 
 		if (forkedChildPid == 0)
 		{
-			if (execve(tokenizedArgs[0], tokenizedArgs, NULL) == -1)
+			if (execve(pathHolder, tokenizedArgs, NULL) == -1)
 				handleError();
 		}
 		else
 			waitpid(forkedChildPid, &status, 0);
 		free(readString);
 		free(tokenizedArgs);
+		free(pathHolder);
 		readString = NULL;
 		tokenizedArgs = NULL;
 	}
+	free(readString);
 	return (0);
 }
 
