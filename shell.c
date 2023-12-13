@@ -28,22 +28,17 @@ int main(void)
 
 	while (true)
 	{
-		printf("#cisfun$ ");
+		printf("$ ");
 		noOfValuesInStringRead = getline(&readString, &readStringSize, stdin);
-
 		if (noOfValuesInStringRead == -1)
 		{
 			printf("\n");
 			break;
 		}
-
 		if (readString[noOfValuesInStringRead - 1] == '\n')
 			readString[noOfValuesInStringRead - 1] = '\0';
-
 		tokenizedArgs = brkStr(readString, " \n\t");
-
 		pathHolder = _findpath(tokenizedArgs[0]);
-	
 		if (pathHolder == NULL || (access(pathHolder, X_OK)) == -1)
 		{
 			if (errno == EACCES)
@@ -54,13 +49,9 @@ int main(void)
 			perror("ERROR: not found\n");
 			continue;
 		}
-
-
 		forkedChildPid = fork();
-
 		if (forkedChildPid == -1)
 			handleError();
-
 		if (forkedChildPid == 0)
 		{
 			if (execve(pathHolder, tokenizedArgs, NULL) == -1)
@@ -68,11 +59,8 @@ int main(void)
 		}
 		else
 			waitpid(forkedChildPid, &status, 0);
-		free(readString);
-		free(tokenizedArgs);
-		free(pathHolder);
-		readString = NULL;
-		tokenizedArgs = NULL;
+		free(readString), free(tokenizedArgs), free(pathHolder);
+		readString = NULL, tokenizedArgs = NULL;
 	}
 	free(readString);
 	return (0);

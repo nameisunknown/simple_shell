@@ -15,5 +15,6 @@ char **brkStr(char *strEntered, char *separator);
 void handleError(void);
 char *_findpath(char *cmd);
 void free_entities(char *buffer, char **tokenizedstr);
+void errnoValidation();
 
 #endif
