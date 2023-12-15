@@ -4,6 +4,6 @@
 extern char *_programName;
 extern int _exitStatus;
 extern int _counter;
-extern char **_environ;
+extern char **environ;
 
 #endif

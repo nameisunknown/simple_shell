@@ -44,7 +44,6 @@ int main(int argc, char **argv)
 				write(1, "\n", 1);
 			break;
 		}
-		readString[noOfValuesInStringRead - 1] = '\0';
 		tokenizedArgs = brkStr(readString, " \n\t");
 		pathHolder = _findpath(tokenizedArgs[0]);
 		if (pathHolder == NULL)
@@ -52,6 +51,7 @@ int main(int argc, char **argv)
 			_perror("%s: %d: %s: not found\n",
 					_programName, _counter, tokenizedArgs[0]), _exitStatus = 127;
 			free_tokenizedArgs(tokenizedArgs);
+			_exitStatus = 127;
 			continue;
 		}
 		_exitStatus = create_fork(pathHolder, tokenizedArgs, readString);
@@ -78,7 +78,7 @@ int create_fork(char *full_path, char **tokenizedArgs, char *readString)
 		exit(1);
 	if (forkedChildPid == 0)
 	{
-		if (execve(full_path, tokenizedArgs, NULL) == -1)
+		if (execve(full_path, tokenizedArgs, environ) == -1)
 		{
 			if (errno == EACCES)
 			{
