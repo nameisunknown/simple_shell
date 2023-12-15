@@ -31,12 +31,8 @@ int main(void)
 		printf("$ ");
 		noOfValuesInStringRead = getline(&readString, &readStringSize, stdin);
 		if (noOfValuesInStringRead == -1)
-		{
-			printf("\n");
 			break;
-		}
-		if (readString[noOfValuesInStringRead - 1] == '\n')
-			readString[noOfValuesInStringRead - 1] = '\0';
+		readString[noOfValuesInStringRead - 1] = '\0';
 		tokenizedArgs = brkStr(readString, " \n\t");
 		pathHolder = _findpath(tokenizedArgs[0]);
 		if (pathHolder == NULL || (access(pathHolder, X_OK)) == -1)
@@ -57,8 +53,7 @@ int main(void)
 			if (execve(pathHolder, tokenizedArgs, NULL) == -1)
 				handleError();
 		}
-		else
-			waitpid(forkedChildPid, &status, 0);
+		waitpid(forkedChildPid, &status, 0);
 		free(readString), free(tokenizedArgs), free(pathHolder);
 		readString = NULL, tokenizedArgs = NULL;
 	}
