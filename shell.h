@@ -20,8 +20,8 @@
 */
 typedef struct specifier_format
 {
-    char *specifier;
-    int (*func)(va_list ptr, char *buffer, int *buffer_index);
+	char *specifier;
+	int (*func)(va_list ptr, char *buffer, int *buffer_index);
 } spec_format;
 
 char **brkStr(char *strEntered, char *separator);

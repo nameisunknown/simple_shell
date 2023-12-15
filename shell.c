@@ -30,8 +30,9 @@ int main(int argc, char **argv)
 	char *readString = NULL, **tokenizedArgs = NULL, *pathHolder = NULL;
 	size_t readStringSize = 0;
 	ssize_t noOfValuesInStringRead = 0;
+
 	_programName = argv[0];
-	
+
 	while (true)
 	{
 		if (isatty(STDIN_FILENO))
@@ -91,7 +92,8 @@ int create_fork(char *full_path, char **tokenizedArgs, char *readString)
 			}
 			else
 			{
-				_perror("%s: %d: %s: not found\n", _programName, _counter, tokenizedArgs[0]);
+				_perror("%s: %d: %s: not found\n",
+						_programName, _counter, tokenizedArgs[0]);
 				exit(127);
 			}
 			exit(1);
