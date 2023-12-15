@@ -15,50 +15,108 @@ void handleError(void)
 /**
  * main - Entry point to program
  *
- * @void: takes no argument
+ * @argc: count of arg entered
+ * @argv: pointer carrying the arg entered
  * Return: returns 0 upon success
  */
-int main(void)
+
+int main(int argc, char **argv)
 {
 	char *readString = NULL, **tokenizedArgs = NULL, *pathHolder = NULL;
 	size_t readStringSize = 0;
 	ssize_t noOfValuesInStringRead = 0;
-	pid_t forkedChildPid;
 	int status;
 
+	programName = argv[0];
 	while (true)
 	{
-		printf("$ ");
+		if (isatty(STDIN_FILENO))
+			printf("$ ");
 		noOfValuesInStringRead = getline(&readString, &readStringSize, stdin);
 		if (noOfValuesInStringRead == -1)
+		{
+			if (isatty(STDIN_FILENO))
+				printf("\n");
 			break;
+		}
 		readString[noOfValuesInStringRead - 1] = '\0';
 		tokenizedArgs = brkStr(readString, " \n\t");
 		pathHolder = _findpath(tokenizedArgs[0]);
-		if (pathHolder == NULL || (access(pathHolder, X_OK)) == -1)
+		if (pathHolder == NULL)
+		{
+			_perror("%s: %d: %s: not found\n",
+					programName, counter, tokenizedArgs[0]), exitStatus = 127;
+			free_tokenizedArgs(tokenizedArgs);
+			continue;
+		}
+		exitStatus = create_fork(pathHolder, tokenizedArgs, readString);
+		free(tokenizedArgs), free(pathHolder);
+	}
+	free(readString);
+	return (exitStatus);
+}
+
+/**
+ * create_fork - forks the child process
+ *
+ * @full_path: this is the full path
+ * @tokenizedArgs: this is the tokenizedArgs
+ * @readString: the string to be read
+ * Return: exit status is returned
+ */
+int create_fork(char *full_path, char **tokenizedArgs, char *readString)
+{
+	pid_t childpid = fork();
+	int status;
+
+	if (forkedChildPid == -1)
+		exit(1);
+	if (forkedChildPid == 0)
+	{
+		if (execve(full_path, tokenizedArgs, NULL) == -1)
 		{
 			if (errno == EACCES)
 			{
-				perror("Permission denied");
-				continue;
+				_perror("%s: %d: %s: Permision denied\n",
+						programName, counter, tokenizedArgs[0]);
+				free_tokenizedArgs(tokenizedArgs);
+				free(readString);
+				free(full_path);
+				exit(126);
 			}
-			perror("ERROR: not found\n");
-			continue;
+			else
+			{
+				_perror("%s: %d: %s: not found\n", programName, counter, tokenizedArgs[0]);
+				exit(127);
+			}
+			exit(1);
 		}
-		forkedChildPid = fork();
-		if (forkedChildPid == -1)
-			handleError();
-		if (forkedChildPid == 0)
-		{
-			if (execve(pathHolder, tokenizedArgs, NULL) == -1)
-				handleError();
-		}
-		waitpid(forkedChildPid, &status, 0);
-		free(readString), free(tokenizedArgs), free(pathHolder);
-		readString = NULL, tokenizedArgs = NULL;
 	}
-	free(readString);
-	return (0);
+	else
+	{
+		wait(&status);
+		status = WEXIT_STATUS(status);
+	}
+	return (status);
+}
+
+/**
+ * free_tokenizedArgs - free an array of tokenized pointers
+ *
+ * @toksArgs: An Array of pointers to be freed
+ */
+
+void free_tokenizedArgs(char *toksArgs[])
+{
+	int i = 0;
+
+	while (toksArgs[i] != NULL)
+	{
+		free(toksAargs[i]);
+		i++;
+	}
+	free(toksArgs[i]);
+	free(toksArgs);
 }
 
 /**
