@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
-* print_error - Produces output according to a format.
+* _perror - Produces output according to a format.
 * @format: Is string contains both text and format specifiers, which are
 * placeholders for the values to print
 * Return: The number of printed characters
@@ -10,9 +10,12 @@
 int _perror(const char *format, ...)
 {
 	int j, i, buffer_index = 0, printed_chars = 0;
+
 	spec_format spec[] = {
-		{"c", print_char_format}, {"s", print_string_format},
-		{"d", print_int_format}, {NULL, NULL}
+		{"c", print_char_format},
+		{"s", print_string_format},
+		{"d", print_int_format},
+		{NULL, NULL}
 	};
 	char buffer[1024];
 	va_list listPtr;

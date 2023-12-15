@@ -1,4 +1,9 @@
 #include "shell.h"
+#include "globals.h"
+
+char *_programName;
+int _exitStatus;
+int _counter;
 
 /**
  * handleError - prints err msg and exit
@@ -25,9 +30,8 @@ int main(int argc, char **argv)
 	char *readString = NULL, **tokenizedArgs = NULL, *pathHolder = NULL;
 	size_t readStringSize = 0;
 	ssize_t noOfValuesInStringRead = 0;
-	int status;
-
-	programName = argv[0];
+	_programName = argv[0];
+	
 	while (true)
 	{
 		if (isatty(STDIN_FILENO))
@@ -45,15 +49,16 @@ int main(int argc, char **argv)
 		if (pathHolder == NULL)
 		{
 			_perror("%s: %d: %s: not found\n",
-					programName, counter, tokenizedArgs[0]), exitStatus = 127;
+					_programName, _counter, tokenizedArgs[0]), _exitStatus = 127;
 			free_tokenizedArgs(tokenizedArgs);
 			continue;
 		}
-		exitStatus = create_fork(pathHolder, tokenizedArgs, readString);
+		printf("%d", argc);
+		_exitStatus = create_fork(pathHolder, tokenizedArgs, readString);
 		free(tokenizedArgs), free(pathHolder);
 	}
 	free(readString);
-	return (exitStatus);
+	return (_exitStatus);
 }
 
 /**
@@ -66,7 +71,7 @@ int main(int argc, char **argv)
  */
 int create_fork(char *full_path, char **tokenizedArgs, char *readString)
 {
-	pid_t childpid = fork();
+	pid_t forkedChildPid = fork();
 	int status;
 
 	if (forkedChildPid == -1)
@@ -78,7 +83,7 @@ int create_fork(char *full_path, char **tokenizedArgs, char *readString)
 			if (errno == EACCES)
 			{
 				_perror("%s: %d: %s: Permision denied\n",
-						programName, counter, tokenizedArgs[0]);
+						_programName, _counter, tokenizedArgs[0]);
 				free_tokenizedArgs(tokenizedArgs);
 				free(readString);
 				free(full_path);
@@ -86,7 +91,7 @@ int create_fork(char *full_path, char **tokenizedArgs, char *readString)
 			}
 			else
 			{
-				_perror("%s: %d: %s: not found\n", programName, counter, tokenizedArgs[0]);
+				_perror("%s: %d: %s: not found\n", _programName, _counter, tokenizedArgs[0]);
 				exit(127);
 			}
 			exit(1);
@@ -95,7 +100,7 @@ int create_fork(char *full_path, char **tokenizedArgs, char *readString)
 	else
 	{
 		wait(&status);
-		status = WEXIT_STATUS(status);
+		status = WEXITSTATUS(status);
 	}
 	return (status);
 }
@@ -112,7 +117,7 @@ void free_tokenizedArgs(char *toksArgs[])
 
 	while (toksArgs[i] != NULL)
 	{
-		free(toksAargs[i]);
+		free(toksArgs[i]);
 		i++;
 	}
 	free(toksArgs[i]);
