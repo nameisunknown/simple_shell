@@ -31,17 +31,17 @@ int main(int argc, char **argv)
 	size_t readStringSize = 0;
 	ssize_t noOfValuesInStringRead = 0;
 
+	(void) (argc);
 	_programName = argv[0];
-
 	while (true)
 	{
 		if (isatty(STDIN_FILENO))
-			printf("$ ");
+			write(1, "$ ", 2);
 		noOfValuesInStringRead = getline(&readString, &readStringSize, stdin);
 		if (noOfValuesInStringRead == -1)
 		{
 			if (isatty(STDIN_FILENO))
-				printf("\n");
+				write(1, "\n", 1);
 			break;
 		}
 		readString[noOfValuesInStringRead - 1] = '\0';
@@ -54,9 +54,8 @@ int main(int argc, char **argv)
 			free_tokenizedArgs(tokenizedArgs);
 			continue;
 		}
-		printf("%d", argc);
 		_exitStatus = create_fork(pathHolder, tokenizedArgs, readString);
-		free(tokenizedArgs), free(pathHolder);
+		free_tokenizedArgs(tokenizedArgs), free(pathHolder);
 	}
 	free(readString);
 	return (_exitStatus);
@@ -94,6 +93,9 @@ int create_fork(char *full_path, char **tokenizedArgs, char *readString)
 			{
 				_perror("%s: %d: %s: not found\n",
 						_programName, _counter, tokenizedArgs[0]);
+				free_tokenizedArgs(tokenizedArgs);
+				free(readString);
+				free(full_path);
 				exit(127);
 			}
 			exit(1);
@@ -145,8 +147,8 @@ char **brkStr(char *strEntered, char *separator)
 	if (strEntered == NULL)
 		exit(EXIT_FAILURE);
 
-	strCollected = strtok(strEntered, separator);
 	cpyOfStrEntered = strdup(strEntered);
+	strCollected = strtok(strEntered, separator);
 
 	while (strCollected != NULL)
 	{
@@ -158,7 +160,7 @@ char **brkStr(char *strEntered, char *separator)
 
 	while (strCollected != NULL)
 	{
-		strReturned[counter] = malloc(strlen(strCollected + 1) * sizeof(char));
+		strReturned[counter] = malloc((strlen(strCollected) + 1) * sizeof(char));
 		strcpy(strReturned[counter], strCollected);
 		strCollected = strtok(NULL, separator);
 		counter++;
