@@ -1,21 +1,11 @@
 #include "shell.h"
 #include "globals.h"
 
+int _envs(char *command, char *args[]);
+
 char *_programName;
 int _exitStatus;
 int _counter;
-
-/**
- * handleError - prints err msg and exit
- *
- * @void: does not take in parameter
- */
-
-void handleError(void)
-{
-	perror("./shell");
-	exit(EXIT_FAILURE);
-}
 
 /**
  * main - Entry point to program
@@ -50,6 +40,8 @@ int main(int argc, char **argv)
 			free_tokenizedArgs(tokenizedArgs);
 			free(readString), exit(_exitStatus);
 		}
+		else if (strcmp(readString, "env") == 0)
+			_envs(readString, tokenizedArgs);
 		pathHolder = _findpath(tokenizedArgs[0]);
 		if (pathHolder == NULL)
 		{
@@ -172,4 +164,28 @@ char **brkStr(char *strEntered, char *separator)
 	strReturned[counter] = NULL;
 	free(cpyOfStrEntered);
 	return (strReturned);
+}
+
+/**
+ * _envs - Prints all the current running environment variables
+ * @command: Is the command to process
+ * @args: Are the arguments of the command
+ * Return: Process result
+*/
+int _envs(char *command, char *args[])
+{
+	int i;
+
+	(void) (args);
+	(void) (command);
+	if (environ == NULL)
+		return (-1);
+
+	for (i = 0; environ[i] != NULL; i++)
+	{
+		write(STDOUT_FILENO, environ[i], strlen(environ[i]));
+		write(STDOUT_FILENO, "\n", 1);
+	}
+
+	return (0);
 }
