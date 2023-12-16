@@ -9,21 +9,23 @@
 char *_findpath(char *cmd)
 {
 	char *dir_topath = NULL, *cpyofpath = NULL, *tokenizedstr = NULL;
-	char *buffer = malloc(sizeof(char) * 1024);
+	char *buffer;
 
-	if (cmd == NULL || buffer == NULL)
-	{
-		free(buffer);
+	if (cmd == NULL)
 		return (NULL);
-	}
+	buffer = malloc(sizeof(char) * (strlen(cmd) + 800));
+	if (buffer == NULL)
+		return (NULL);
 	if (cmd[0] == '/' || cmd[0] == '.')
 	{
 		strcpy(buffer, cmd);
 		return (buffer);
 	}
 	dir_topath = getenv("PATH");
+	if (dir_topath == NULL)
+		return (NULL);
 	cpyofpath = strdup(dir_topath);
-	if (cpyofpath == NULL || dir_topath == NULL)
+	if (cpyofpath == NULL)
 	{
 		free(buffer);
 		return (NULL);

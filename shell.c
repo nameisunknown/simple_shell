@@ -25,6 +25,7 @@ int main(int argc, char **argv)
 	_programName = argv[0];
 	while (true)
 	{
+		_counter++;
 		if (isatty(STDIN_FILENO))
 			write(1, "$ ", 2);
 		noOfValuesInStringRead = getline(&readString, &readStringSize, stdin);
@@ -41,7 +42,10 @@ int main(int argc, char **argv)
 			free(readString), exit(_exitStatus);
 		}
 		else if (strcmp(readString, "env") == 0)
+		{
 			_envs(readString, tokenizedArgs);
+			continue;
+		}
 		pathHolder = _findpath(tokenizedArgs[0]);
 		if (pathHolder == NULL)
 		{
