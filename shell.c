@@ -45,13 +45,17 @@ int main(int argc, char **argv)
 			break;
 		}
 		tokenizedArgs = brkStr(readString, " \n\t");
+		if (strcmp(readString, "exit") == 0)
+		{
+			free_tokenizedArgs(tokenizedArgs);
+			free(readString), exit(_exitStatus);
+		}
 		pathHolder = _findpath(tokenizedArgs[0]);
 		if (pathHolder == NULL)
 		{
 			_perror("%s: %d: %s: not found\n",
 					_programName, _counter, tokenizedArgs[0]), _exitStatus = 127;
-			free_tokenizedArgs(tokenizedArgs);
-			_exitStatus = 127;
+			free_tokenizedArgs(tokenizedArgs), _exitStatus = 127;
 			continue;
 		}
 		_exitStatus = create_fork(pathHolder, tokenizedArgs, readString);
