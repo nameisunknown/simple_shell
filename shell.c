@@ -44,6 +44,7 @@ int main(int argc, char **argv)
 		else if (strcmp(readString, "env") == 0)
 		{
 			_envs(readString, tokenizedArgs);
+			free_tokenizedArgs(tokenizedArgs);
 			continue;
 		}
 		pathHolder = _findpath(tokenizedArgs[0]);
